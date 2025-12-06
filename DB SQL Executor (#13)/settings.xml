@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="statementSeparator" type="xstring" value=";"/>
+        <entry key="statement" type="xstring" value="-- TRANSACTION START%%00010BEGIN;%%00010%%00010-- 1. UPSERT PROJECTS%%00010-- &quot;Upsert&quot;: If RCN exists, Update it. If not, Insert it.%%00010INSERT INTO public.cordis_projects (%%00010    rcn, acronym, title, start_date, end_date, %%00010    total_cost, ec_max_contribution, objective, last_updated%%00010)%%00010SELECT %%00010    rcn, acronym, title, start_date, end_date, %%00010    total_cost, ec_max_contribution, objective, NOW()%%00010FROM public.staging_projects%%00010ON CONFLICT (rcn) %%00010DO UPDATE SET%%00010    acronym = EXCLUDED.acronym,%%00010    title = EXCLUDED.title,%%00010    start_date = EXCLUDED.start_date,%%00010    end_date = EXCLUDED.end_date,%%00010    total_cost = EXCLUDED.total_cost,%%00010    ec_max_contribution = EXCLUDED.ec_max_contribution,%%00010    objective = EXCLUDED.objective,%%00010    last_updated = NOW();%%00010%%00010-- 2. REFRESH PARTICIPANTS%%00010-- Strategy: Delete old participants for these specific projects, then insert the new ones.%%00010-- This handles cases where a partner left or joined the project.%%00010%%00010-- A. Remove old participants for the projects currently in staging%%00010DELETE FROM public.cordis_participants%%00010WHERE project_rcn IN (SELECT DISTINCT rcn FROM public.staging_projects);%%00010%%00010-- B. Insert fresh participants from staging%%00010INSERT INTO public.cordis_participants (%%00010    project_rcn, org_id, legal_name, country_code, role, ec_contribution%%00010)%%00010SELECT %%00010    project_rcn, org_id, legal_name, country_code, role, ec_contribution%%00010FROM public.staging_participants;%%00010%%00010-- TRANSACTION END%%00010COMMIT;"/>
+        <config key="multipleStatement_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="multipleStatement" type="xboolean" value="false"/>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="IDLE"/>
+    <entry key="factory" type="xstring" value="org.knime.database.node.manipulation.executor.DBExecutorNodeFactory"/>
+    <entry key="node-name" type="xstring" value="DB SQL Executor"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME database nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.database.nodes"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.8.0.v202510021204"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Database"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.database.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.8.0.v202510021204"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="DB SQL Executor"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>

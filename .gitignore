@@ -1,0 +1,29 @@
+# --- Operating System & IDEs ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Python Environment & Artifacts ---
+# Never commit your virtual environment or compiled python files
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# --- KNIME System Files (Repo Hygiene) ---
+# These are temporary state files created when KNIME is open
+.knimeLock
+*.knime-lock
+.savedWithData
+.artifacts/
+
+# --- KNIME Data Blobs (The "Heavy" Stuff) ---
+# We keep the Node Folders (e.g., "Python Script (#5)/") so we save the logic/settings.
+# But we IGNORE the binary data and results stored inside them.
+*/port_*/
+*/internal/
+*/data.xml
+*/spec.xml
+
+# --- Security ---
+*.credentials
