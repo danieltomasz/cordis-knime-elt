@@ -5,11 +5,27 @@
     <config key="internal_node_subsettings">
         <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
     </config>
-    <config key="model"/>
+    <config key="model">
+        <config key="sortingCriteria">
+            <config key="0">
+                <config key="columnV2">
+                    <entry key="regularChoice" type="xstring" isnull="true" value=""/>
+                    <entry key="specialChoice_Internals" type="xstring" value="ROW_ID"/>
+                </config>
+                <entry key="sortingOrder" type="xstring" value="ASCENDING"/>
+                <entry key="stringComparison" type="xstring" value="NATURAL"/>
+            </config>
+        </config>
+        <entry key="filterMode" type="xstring" value="ROWS"/>
+        <entry key="amount" type="xlong" value="10"/>
+        <entry key="missingsToEnd" type="xboolean" value="true"/>
+        <entry key="rowOrder" type="xstring" value="SORTED"/>
+    </config>
+    <config key="variables"/>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="EXECUTED"/>
-    <entry key="factory" type="xstring" value="org.knime.base.node.util.mergevariables.MergeVariables2NodeFactory"/>
-    <entry key="node-name" type="xstring" value="Merge Variables"/>
+    <entry key="factory" type="xstring" value="org.knime.base.node.preproc.topk.TopKSelectorNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Top k Row Filter"/>
     <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
     <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
     <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
@@ -19,26 +35,20 @@
     <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
     <entry key="node-feature-version" type="xstring" value="5.8.0.v202510021208"/>
     <config key="factory_settings"/>
-    <config key="node_creation_config">
-        <config key="input"/>
-        <config key="Merged variables"/>
-    </config>
-    <entry key="name" type="xstring" value="Merge Variables"/>
+    <entry key="name" type="xstring" value="Top k Row Filter"/>
     <entry key="hasContent" type="xboolean" value="true"/>
     <entry key="isInactive" type="xboolean" value="false"/>
     <config key="ports">
         <config key="port_1">
             <entry key="index" type="xint" value="1"/>
-            <entry key="port_spec_class" type="xstring" value="org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec"/>
-            <entry key="port_object_class" type="xstring" value="org.knime.core.node.port.flowvariable.FlowVariablePortObject"/>
-            <entry key="port_object_summary" type="xstring" value="Variables connection"/>
-            <entry key="port_spec_location" type="xstring" value="spec/spec.zip"/>
-            <entry key="port_object_location" type="xstring" value="object/portobject.zip"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            <entry key="port_object_summary" type="xstring" value="Rows: 10, Cols: 9"/>
             <entry key="port_dir_location" type="xstring" value="port_1"/>
         </config>
     </config>
     <config key="filestores">
         <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-        <entry key="file_store_id" type="xstring" value="ff68d5ef-ec7e-460a-8336-bba0a4a93860"/>
+        <entry key="file_store_id" type="xstring" value="a9200bfb-ce53-47dd-86e7-cab2f7d6b8de"/>
     </config>
 </config>

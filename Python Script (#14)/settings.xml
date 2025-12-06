@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="python3_command" type="xstring" value=""/>
+        <entry key="script" type="xstring" value="import knime.scripting.io as knio%%00010import polars as pl%%00010import pyarrow as pa%%00010from sentence_transformers import SentenceTransformer%%00010from keybert import KeyBERT%%00010import numpy as np%%00010%%00010# --- The Type Conversion Utility (Needed for output) ---%%00010def cast_large_strings_for_knime(df: pl.DataFrame) -&gt; knio.Table:%%00010    &quot;&quot;&quot;Casts all Polars LargeUtf8 to standard Utf8 for KNIME compatibility.&quot;&quot;&quot;%%00010    arrow_table = df.to_arrow()%%00010    new_schema = []%%00010    %%00010    for field in arrow_table.schema:%%00010        if field.type == pa.large_string():%%00010            new_schema.append(field.with_type(pa.string()))%%00010        else:%%00010            new_schema.append(field)%%00010            %%00010    casted_table = arrow_table.cast(pa.schema(new_schema))%%00010    return knio.Table.from_pyarrow(casted_table)%%00010%%00010# 1. LOAD DATA &amp; MINIMAL CLEANUP%%00010arrow_table = knio.input_tables[0].to_pyarrow()%%00010%%00010# 1.1. Select ONLY the ID and the objective text to minimize metadata conflicts%%00010# We explicitly select 'rcn' to use as the join key later.%%00010filtered_arrow_table = arrow_table.select(['rcn', 'objective']) %%00010df_raw = pl.from_records(filtered_arrow_table.to_pydict()) %%00010%%00010# 2. LOAD MODELS (Cached locally)%%00010embedder = SentenceTransformer('all-MiniLM-L6-v2')%%00010kw_model = KeyBERT()%%00010%%00010# 3. GENERATE VECTORS and TAGS%%00010print(&quot;Generating Embeddings...&quot;)%%00010objectives = df_raw[&quot;objective&quot;].fill_null(&quot;&quot;).to_list()%%00010%%00010# Process data%%00010embeddings = embedder.encode(objectives, show_progress_bar=True)%%00010tags_list = [%%00010    kw_model.extract_keywords(txt, keyphrase_ngram_range=(1, 1), stop_words='english', top_n=5)%%00010    for txt in objectives%%00010]%%00010tags_words = [&quot; &quot;.join([k[0] for k in keywords]) for keywords in tags_list]%%00010%%00010%%00010# 4. CREATE OUTPUT DATAFRAME (Only the new columns + Key)%%00010df_output_enriched = pl.DataFrame({%%00010    'rcn': df_raw['rcn'], # Key must be present for merging later%%00010    'embedding': embeddings,%%00010    'tags': tags_words%%00010})%%00010%%00010# 5. FINAL OUTPUT%%00010knio.output_tables[0] = cast_large_strings_for_knime(df_output_enriched)"/>
+    </config>
+    <config key="variables">
+        <entry key="version" type="xstring" value="V_2019_09_13"/>
+        <config key="tree">
+            <config key="python3_command">
+                <entry key="used_variable" type="xstring" value=""/>
+                <entry key="used_variable_flawed" type="xboolean" value="false"/>
+                <entry key="exposed_variable" type="xstring" isnull="true" value=""/>
+            </config>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <config key="nodecontainer_message">
+        <entry key="type" type="xstring" value="ERROR"/>
+        <entry key="message" type="xstring" value="Execute failed: TypeError: expected data of type Sequence, got 'dict'%%00010%%00010Hint: Try passing your data to the DataFrame constructor instead, e.g. `pl.DataFrame(data)`."/>
+    </config>
+    <entry key="factory" type="xstring" value="org.knime.python3.scripting.nodes2.script.PythonScriptNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Python Script"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Python 3 - Scripting Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.python3.scripting.nodes"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.8.0.v202510031553"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Python Integration"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.python3.scripting.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.8.0.v202510031553"/>
+    <config key="factory_settings"/>
+    <config key="node_creation_config">
+        <config key="Input object (pickled)"/>
+        <config key="Input table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output image"/>
+        <config key="Output object (pickled)"/>
+    </config>
+    <entry key="name" type="xstring" value="Python Script"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>
